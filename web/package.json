@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
-    "check:ladder": "node --no-warnings --experimental-strip-types scripts/check-ladder.mts"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@tanstack/react-query": "^5.102.7",
