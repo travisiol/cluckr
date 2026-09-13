@@ -1,0 +1,489 @@
+@import "tailwindcss";
+
+/*
+ * CLUCKR — "the rotisserie at night".
+ *
+ * A game, so a single screen: the table is the page and everything else
+ * floats over it in glass. Warm near-black ground, one pool of light on
+ * the table, chrome that catches it. Colour is a state, not decoration:
+ *
+ *   gold   a chicken, a cash-out, the money you can take. The only
+ *          saturated colour that touches UI.
+ *   red    a bone. Nothing else is ever red.
+ *   ivory  the plates, the bones, plain text.
+ *
+ * Everything that touches an element or that a utility must be able to
+ * override lives inside a layer: unlayered rules beat every utility.
+ */
+:root {
+  --void: #0b0908;
+  --void-2: #131009;
+  --void-3: #1c1711;
+
+  --ink: #f3ecdf;
+  --ink-2: rgba(243, 236, 223, 0.74);
+  --ink-3: rgba(243, 236, 223, 0.52);
+  --ink-4: rgba(243, 236, 223, 0.32);
+
+  --glass: rgba(255, 244, 226, 0.05);
+  --glass-2: rgba(255, 244, 226, 0.085);
+  --edge: rgba(255, 244, 226, 0.11);
+  --edge-2: rgba(255, 244, 226, 0.2);
+
+  --gold: #f4b942;
+  --gold-hot: #ffd97a;
+  --gold-deep: #a86f0e;
+  --gold-soft: rgba(244, 185, 66, 0.14);
+  --gold-glow: rgba(244, 185, 66, 0.35);
+
+  --red: #ff3b30;
+  --red-soft: rgba(255, 59, 48, 0.16);
+  --red-glow: rgba(255, 59, 48, 0.4);
+
+  --ivory: #efe6d2;
+}
+
+@theme inline {
+  --color-void: var(--void);
+  --color-void-2: var(--void-2);
+  --color-void-3: var(--void-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-glass: var(--glass);
+  --color-glass-2: var(--glass-2);
+  --color-edge: var(--edge);
+  --color-edge-2: var(--edge-2);
+  --color-gold: var(--gold);
+  --color-gold-hot: var(--gold-hot);
+  --color-gold-deep: var(--gold-deep);
+  --color-gold-soft: var(--gold-soft);
+  --color-red: var(--red);
+  --color-red-soft: var(--red-soft);
+  --color-ivory: var(--ivory);
+
+  --font-display: "Inter Tight", "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --radius-card: 22px;
+  --radius-panel: 16px;
+}
+
+@layer base {
+  * {
+    border-color: var(--edge);
+  }
+
+  html {
+    background: var(--void);
+    color-scheme: dark;
+    height: 100%;
+  }
+
+  /* The ground lives on <html>; body stays transparent so the fixed
+     nebula behind everything is not painted over. */
+  body {
+    background-color: transparent;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow: hidden;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: var(--gold);
+    color: var(--void);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  input::placeholder {
+    color: var(--ink-4);
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* The nebula: a warm pool where the table sits, a red ember low-left,
+     the rest is night. Fixed, behind everything. */
+  .nebula {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60vw 48vh at 50% 38%, rgba(255, 170, 70, 0.16), transparent 64%),
+      radial-gradient(40vw 34vh at 8% 104%, rgba(140, 30, 18, 0.32), transparent 62%),
+      radial-gradient(36vw 30vh at 100% 0%, rgba(90, 124, 255, 0.12), transparent 62%),
+      var(--void);
+  }
+
+  .nebula::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: soft-light;
+  }
+
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-card);
+    backdrop-filter: blur(20px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 244, 226, 0.07),
+      0 24px 60px -30px rgba(0, 0, 0, 0.8);
+  }
+
+  .glass-2 {
+    background: var(--glass-2);
+    border: 1px solid var(--edge-2);
+    border-radius: var(--radius-panel);
+    backdrop-filter: blur(20px) saturate(140%);
+    box-shadow: inset 0 1px 0 rgba(255, 244, 226, 0.08);
+  }
+
+  .panel {
+    background: var(--glass);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-panel);
+  }
+
+  .display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+  }
+
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding: 0.8rem 1.35rem;
+    font-weight: 600;
+    font-size: 0.925rem;
+    line-height: 1;
+    border: 1px solid transparent;
+    transition:
+      transform 160ms ease,
+      background-color 160ms ease,
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      opacity 160ms ease;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+  .btn:not(:disabled):hover {
+    transform: translateY(-1px);
+  }
+  .btn:not(:disabled):active {
+    transform: translateY(0);
+  }
+
+  .btn-sm {
+    padding: 0.55rem 0.95rem;
+    font-size: 0.8rem;
+  }
+
+  .btn-glass {
+    background: var(--glass-2);
+    border-color: var(--edge-2);
+    color: var(--ink);
+  }
+  .btn-glass:not(:disabled):hover {
+    background: rgba(255, 244, 226, 0.13);
+  }
+
+  .btn-gold {
+    background: linear-gradient(180deg, var(--gold-hot), var(--gold) 55%, var(--gold-deep));
+    color: #1a1204;
+    box-shadow:
+      0 0 0 1px rgba(255, 217, 122, 0.35) inset,
+      0 12px 30px -12px var(--gold-glow);
+  }
+  .btn-gold:not(:disabled):hover {
+    box-shadow:
+      0 0 0 1px rgba(255, 217, 122, 0.5) inset,
+      0 18px 40px -12px var(--gold-glow);
+  }
+
+  .btn-red {
+    background: var(--red-soft);
+    border-color: rgba(255, 59, 48, 0.4);
+    color: #ffb4ae;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--edge-2);
+    background: var(--glass);
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .dot {
+    display: inline-block;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+  }
+
+  .field {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--edge-2);
+    border-radius: 14px;
+    padding: 0.7rem 0.9rem;
+    width: 100%;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    transition: border-color 160ms ease;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .seg {
+    display: inline-flex;
+    padding: 3px;
+    gap: 3px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--edge);
+  }
+  .seg > button {
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--ink-3);
+    transition:
+      background-color 120ms ease,
+      color 120ms ease;
+  }
+  .seg > button:hover {
+    color: var(--ink);
+  }
+  .seg > button[aria-pressed="true"] {
+    background: var(--gold);
+    color: #1a1204;
+  }
+
+  /* The bones slider. */
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--gold) var(--fill, 0%), rgba(255, 244, 226, 0.14) var(--fill, 0%));
+    outline: none;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--ivory);
+    border: 2px solid var(--void);
+    box-shadow: 0 0 0 1px var(--edge-2);
+    cursor: pointer;
+  }
+  .slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--ivory);
+    border: 2px solid var(--void);
+    box-shadow: 0 0 0 1px var(--edge-2);
+    cursor: pointer;
+  }
+
+  /* The ladder. */
+  .rung {
+    display: grid;
+    grid-template-columns: 2rem 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.38rem 0.6rem;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.78rem;
+    color: var(--ink-3);
+  }
+  .rung.reached {
+    color: var(--ink);
+  }
+  .rung.current {
+    background: var(--gold-soft);
+    color: var(--gold-hot);
+    box-shadow: inset 0 0 0 1px rgba(244, 185, 66, 0.35);
+  }
+  .rung.next {
+    box-shadow: inset 0 0 0 1px var(--edge-2);
+    color: var(--ink-2);
+  }
+  .rung.capped {
+    color: var(--ink-4);
+  }
+
+  /* The keyboard / no-WebGL board. */
+  .cloche-btn {
+    aspect-ratio: 1;
+    border-radius: 14px;
+    border: 1px solid var(--edge-2);
+    background: linear-gradient(180deg, rgba(255, 244, 226, 0.14), rgba(255, 244, 226, 0.04));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition:
+      transform 120ms ease,
+      border-color 120ms ease;
+  }
+  .cloche-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    border-color: var(--gold);
+  }
+  .cloche-btn.chicken,
+  .cloche-btn.gold {
+    background: var(--gold-soft);
+    border-color: var(--gold);
+  }
+  .cloche-btn.bone {
+    background: var(--red-soft);
+    border-color: var(--red);
+  }
+  .cloche-btn.dim {
+    opacity: 0.5;
+  }
+  .cloche-btn.pending {
+    border-color: var(--gold);
+    animation: bob 0.6s ease-in-out infinite;
+  }
+
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  /* Result banner. */
+  .banner {
+    animation: rise 420ms cubic-bezier(0.2, 0.9, 0.2, 1.1) both;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .pulse-gold {
+    animation: pulseGold 1.4s ease-in-out infinite;
+  }
+  @keyframes pulseGold {
+    0%,
+    100% {
+      box-shadow:
+        0 0 0 1px rgba(255, 217, 122, 0.35) inset,
+        0 12px 30px -12px var(--gold-glow);
+    }
+    50% {
+      box-shadow:
+        0 0 0 1px rgba(255, 217, 122, 0.6) inset,
+        0 16px 44px -8px var(--gold-glow);
+    }
+  }
+
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--edge-2) transparent;
+  }
+  .scroll-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background: var(--edge-2);
+    border-radius: 999px;
+  }
+}

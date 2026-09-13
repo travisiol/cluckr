@@ -1,0 +1,21 @@
+{
+  "name": "cluckr-house",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The CLUCKR house: hands out signed hash-chain commitments, reveals one seed per lift once the pick is on chain, and sweeps up rounds nobody comes back for.",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "e2e": "tsx scripts/e2e.ts"
+  },
+  "dependencies": {
+    "viem": "^2.56.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5"
+  }
+}

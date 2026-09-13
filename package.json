@@ -1,0 +1,13 @@
+{
+  "name": "cluckr",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLUCKR — 25 cloches, some hide a bone. contracts/ (the table), server/ (the house), web/ (the game).",
+  "scripts": {
+    "test": "npm --prefix contracts test",
+    "e2e": "npm --prefix server run e2e",
+    "dev": "npm --prefix web run dev",
+    "build": "npm --prefix web run build",
+    "house": "npm --prefix server run start"
+  }
+}

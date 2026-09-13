@@ -1,0 +1,13 @@
+node_modules
+.env
+.env.local
+*.log
+server/data
+web/.next
+web/out
+web/next-env.d.ts
+web/tsconfig.tsbuildinfo
+contracts/artifacts
+contracts/cache
+contracts/typechain-types
+contracts/deployments/localhost.json
